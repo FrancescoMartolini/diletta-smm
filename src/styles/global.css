@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ---- COLORE — canali "R G B" (permettono bg-bg/90 ecc. in Tailwind) ----
+     Palette PROVVISORIA scelta in assenza di colori dalla cliente:
+     carta calda + inchiostro + un solo accento rosso, usato con parsimonia.
+     Per cambiarla basta modificare questi valori. */
+  --color-bg: 242 239 232;        /* #F2EFE8 carta */
+  --color-text: 23 21 15;         /* #17150F inchiostro caldo */
+  --color-primary: 23 21 15;      /* #17150F sfondi scuri / bottoni */
+  --color-secondary: 107 102 91;  /* #6B665B testo secondario (contrasto AA su bg) */
+  --color-accent: 195 20 50;      /* #C31432 rosso scarlatto: CTA, hover, dettagli */
+  --color-muted: 221 216 204;     /* #DDD8CC linee e superfici */
+  --color-inverse: 250 248 244;   /* #FAF8F4 testo su sfondo scuro */
+
+  /* ---- TIPOGRAFIA (font self-hosted via @fontsource, vedi main.jsx) ---- */
+  --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
+  --font-body: "Work Sans Variable", "Helvetica Neue", Arial, sans-serif;
+
+  /* ---- ALTRO ---- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --container-max: 1400px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: rgb(var(--color-bg));
+  color: rgb(var(--color-text));
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 3px;
+}
+
+/* ---------- Micro-interazioni ---------- */
+
+/* Reveal all'ingresso in viewport (componente <Reveal>) */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 800ms var(--ease), transform 800ms var(--ease);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Titoli: ogni riga sale da una maschera (delay via --d) */
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+.line-mask > span {
+  display: block;
+  transform: translateY(110%);
+  animation: line-up 1000ms var(--ease) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes line-up {
+  to { transform: none; }
+}
+
+/* Link con sottolineatura animata */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  padding-bottom: 2px;
+  transition: background-size 400ms var(--ease), color 300ms;
+}
+.link-underline:hover {
+  color: rgb(var(--color-accent));
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+}
+
+/* rispetta prefers-reduced-motion: niente movimento, contenuti subito visibili */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .line-mask > span { transform: none; animation: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
