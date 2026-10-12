@@ -1,10 +1,6 @@
-import { Link } from "react-router-dom";
 import Img from "../ui/Img";
 import { siteConfig } from "../../config/site.config";
 import { homeConfig } from "../../config/home.config";
-import { services as fallbackServices } from "../../config/services.config";
-import { useContent } from "../../lib/useContent";
-import { servicesQuery } from "../../lib/queries";
 import { STAR_POINTS } from "../../lib/star";
 import "./hero.css";
 
@@ -17,7 +13,6 @@ const PHOTO_STYLE = {
 
 export default function Hero() {
   const { hero } = homeConfig;
-  const { data: services } = useContent(servicesQuery, fallbackServices);
 
   return (
     <section className="hero">
@@ -51,30 +46,22 @@ export default function Hero() {
           );
         })}
 
-        {/* Badge rosa = CTA principale verso i lavori */}
-        <a href={hero.badge.href} className="hero__badge">
-          <svg viewBox="0 0 100 100" aria-hidden="true">
-            <polygon points={STAR_POINTS} fill="rgb(var(--color-accent))" />
-          </svg>
-          <span>
-            {hero.badge.line1}
-            <br />
-            {hero.badge.line2} ↓
-          </span>
-        </a>
+        {/* Bollini CTA: rosa = lavori, beige = servizi */}
+        {hero.badges.map((b) => (
+          <a key={b.id} href={b.href} className={`hero__badge hero__badge--${b.id}`}>
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <polygon points={STAR_POINTS} fill={`rgb(var(--color-${b.tone}))`} />
+            </svg>
+            <span>
+              {b.line1}
+              <br />
+              {b.line2} ↓
+            </span>
+          </a>
+        ))}
       </div>
 
       <div className="hero__foot">
-        <nav aria-label="Servizi" className="hero__services">
-          <p>({services.length} servizi)</p>
-          <ul>
-            {services.map((s) => (
-              <li key={s.slug?.current || s.slug || s.title}>
-                <Link to="/servizi">{s.title}</Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
         <p className="hero__about">
           {siteConfig.tagline}. {siteConfig.description}
         </p>

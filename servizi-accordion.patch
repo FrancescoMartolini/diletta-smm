@@ -1,0 +1,307 @@
+diff --git a/src/components/sections/Hero.jsx b/src/components/sections/Hero.jsx
+index 4b9afbf..68800c2 100644
+--- a/src/components/sections/Hero.jsx
++++ b/src/components/sections/Hero.jsx
+@@ -1,10 +1,6 @@
+-import { Link } from "react-router-dom";
+ import Img from "../ui/Img";
+ import { siteConfig } from "../../config/site.config";
+ import { homeConfig } from "../../config/home.config";
+-import { services as fallbackServices } from "../../config/services.config";
+-import { useContent } from "../../lib/useContent";
+-import { servicesQuery } from "../../lib/queries";
+ import { STAR_POINTS } from "../../lib/star";
+ import "./hero.css";
+ 
+@@ -17,7 +13,6 @@ const PHOTO_STYLE = {
+ 
+ export default function Hero() {
+   const { hero } = homeConfig;
+-  const { data: services } = useContent(servicesQuery, fallbackServices);
+ 
+   return (
+     <section className="hero">
+@@ -51,30 +46,22 @@ export default function Hero() {
+           );
+         })}
+ 
+-        {/* Badge rosa = CTA principale verso i lavori */}
+-        <a href={hero.badge.href} className="hero__badge">
+-          <svg viewBox="0 0 100 100" aria-hidden="true">
+-            <polygon points={STAR_POINTS} fill="rgb(var(--color-accent))" />
+-          </svg>
+-          <span>
+-            {hero.badge.line1}
+-            <br />
+-            {hero.badge.line2} ↓
+-          </span>
+-        </a>
++        {/* Bollini CTA: rosa = lavori, beige = servizi */}
++        {hero.badges.map((b) => (
++          <a key={b.id} href={b.href} className={`hero__badge hero__badge--${b.id}`}>
++            <svg viewBox="0 0 100 100" aria-hidden="true">
++              <polygon points={STAR_POINTS} fill={`rgb(var(--color-${b.tone}))`} />
++            </svg>
++            <span>
++              {b.line1}
++              <br />
++              {b.line2} ↓
++            </span>
++          </a>
++        ))}
+       </div>
+ 
+       <div className="hero__foot">
+-        <nav aria-label="Servizi" className="hero__services">
+-          <p>({services.length} servizi)</p>
+-          <ul>
+-            {services.map((s) => (
+-              <li key={s.slug?.current || s.slug || s.title}>
+-                <Link to="/servizi">{s.title}</Link>
+-              </li>
+-            ))}
+-          </ul>
+-        </nav>
+         <p className="hero__about">
+           {siteConfig.tagline}. {siteConfig.description}
+         </p>
+diff --git a/src/components/sections/ServicesPreview.jsx b/src/components/sections/ServicesPreview.jsx
+index 5ed5007..971c7a8 100644
+--- a/src/components/sections/ServicesPreview.jsx
++++ b/src/components/sections/ServicesPreview.jsx
+@@ -10,7 +10,7 @@ export default function ServicesPreview() {
+   const { data: services, loading } = useContent(servicesQuery, fallbackServices);
+ 
+   return (
+-    <section className="bg-muted py-24 md:py-40">
++    <section id={copy.id} className="scroll-mt-20 bg-muted py-24 md:py-40">
+       <div className="container">
+         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between mb-14 md:mb-24">
+           <Reveal>
+@@ -33,7 +33,7 @@ export default function ServicesPreview() {
+             services.map((s, i) => (
+               <li key={s.slug?.current || s.slug || s.title} className="border-t border-primary/20">
+                 <Reveal delay={i * 60}>
+-                  <Link to="/servizi" className="group flex items-center gap-6 py-6 md:py-9">
++                  <Link to={`/servizi#${s.slug?.current || s.slug}`} className="group flex items-center gap-6 py-6 md:py-9">
+                     <span className="flex-1 min-w-0">
+                       <span className="block font-display text-[clamp(2rem,6.2vw,6.5rem)] leading-[1] tracking-[-0.02em] transition-all duration-500 ease-editorial group-hover:italic group-hover:translate-x-[1.2vw]">
+                         {s.title}
+diff --git a/src/components/sections/hero.css b/src/components/sections/hero.css
+index 222f15e..09ac59c 100644
+--- a/src/components/sections/hero.css
++++ b/src/components/sections/hero.css
+@@ -104,6 +104,8 @@
+ .hero__badge span { position: relative; }
+ .hero__badge:hover svg { transform: rotate(30deg); }
+ .hero__badge:hover { transform: scale(1.06); }
++/* Badge servizi (beige): speculare al rosa, a destra della composizione */
++.hero__badge--services { left: auto; right: calc(var(--u) * 15); top: calc(var(--u) * 44); }
+ 
+ /* ---- Microtesti ---- */
+ .hero__foot {
+@@ -118,19 +120,8 @@
+   gap: 2rem;
+   padding: 0 clamp(1.25rem, 2.8vw, 2.5rem) clamp(1.25rem, 2.2vw, 2.25rem);
+ }
+-.hero__services p { font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.75rem; }
+-.hero__services ul { display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; }
+-.hero__services a {
+-  display: inline-block;
+-  font-size: clamp(1rem, 1.5vw, 1.375rem);
+-  padding: 0.2rem 0.85rem;
+-  margin-left: -0.85rem;
+-  border: 1px solid transparent;
+-  border-radius: 999px;
+-  transition: border-color 300ms var(--ease), background-color 300ms;
+-}
+-.hero__services a:hover { border-color: rgb(var(--color-primary)); background-color: rgb(var(--color-accent)); }
+ .hero__about {
++  margin-left: auto;
+   max-width: 21rem;
+   text-align: right;
+   font-size: 0.875rem;
+@@ -144,13 +135,14 @@
+   .hero__photo--b { right: calc(var(--u) * 5); top: calc(var(--u) * 40); width: calc(var(--u) * 14); }
+   .hero__photo--c { left: calc(var(--u) * 46); top: calc(var(--u) * 38); width: calc(var(--u) * 26); }
+   .hero__badge { left: calc(var(--u) * 5); top: calc(var(--u) * 54); width: calc(var(--u) * 12); }
++  .hero__badge--services { left: calc(var(--u) * 22); right: auto; top: calc(var(--u) * 65); width: calc(var(--u) * 12); }
+   .hero__about { max-width: 16rem; }
+ }
+ 
+ /* ---- Mobile: ricomposto, non rimpicciolito ---- */
+ @media (max-width: 639px) {
+   .hero { min-height: 0; }
+-  .hero__stage { position: relative; height: calc(var(--u) * 128); }
++  .hero__stage { position: relative; height: calc(var(--u) * 136); }
+   .hero__title { top: calc(var(--u) * 5); }
+   .hero__line--sans { font-size: calc(var(--u) * 22); margin-left: calc(var(--u) * -0.6); }
+   .hero__line--serif { font-size: calc(var(--u) * 22); margin-top: calc(var(--u) * 1.5); margin-right: calc(var(--u) * -1); }
+@@ -158,9 +150,9 @@
+   .hero__photo--b { display: none; }
+   .hero__photo--c { left: auto; right: calc(var(--u) * 6); top: calc(var(--u) * 70); width: calc(var(--u) * 38); }
+   .hero__badge { left: calc(var(--u) * 36); top: calc(var(--u) * 94); width: calc(var(--u) * 26); min-width: 0; }
++  .hero__badge--services { left: calc(var(--u) * 8); right: auto; top: calc(var(--u) * 111); width: calc(var(--u) * 23); min-width: 0; }
+   .hero__foot { position: relative; flex-direction: column; align-items: flex-start; gap: 1.75rem; padding: 0 1.25rem 2.5rem; }
+-  .hero__services a { font-size: 1.375rem; }
+-  .hero__about { text-align: left; max-width: 22rem; }
++  .hero__about { text-align: left; max-width: 22rem; margin-left: 0; }
+ }
+ 
+ @media (prefers-reduced-motion: reduce) {
+diff --git a/src/config/home.config.js b/src/config/home.config.js
+index 6318686..23e8006 100644
+--- a/src/config/home.config.js
++++ b/src/config/home.config.js
+@@ -17,7 +17,11 @@ export const homeConfig = {
+       { id: "b", imageId: null, alt: "[DA COMPILARE] Lavoro 2", caption: "[CLIENTE]" },
+       { id: "c", imageId: null, alt: "[DA COMPILARE] Lavoro 3", caption: "[CLIENTE · PROGETTO]" },
+     ],
+-    badge: { line1: "Scopri", line2: "i lavori", href: "#selected-work" },
++    // Bollini CTA: il rosa porta ai lavori, il beige ai servizi (sezione "Cosa faccio" della home)
++    badges: [
++      { id: "work", line1: "Scopri", line2: "i lavori", href: "#selected-work", tone: "accent" },
++      { id: "services", line1: "Scopri", line2: "i servizi", href: "#servizi", tone: "muted" },
++    ],
+   },
+ 
+   intro: {
+@@ -47,6 +51,7 @@ export const homeConfig = {
+   },
+ 
+   services: {
++    id: "servizi",
+     kicker: "Cosa faccio",
+     headline: "Cosa posso fare\nper il tuo brand.",
+     cta: { label: "Tutti i servizi", path: "/servizi" },
+diff --git a/src/pages/Servizi.jsx b/src/pages/Servizi.jsx
+index 0899212..3cdba7d 100644
+--- a/src/pages/Servizi.jsx
++++ b/src/pages/Servizi.jsx
+@@ -1,4 +1,5 @@
+-import { useState } from "react";
++import { useEffect, useState } from "react";
++import { useLocation } from "react-router-dom";
+ import { services as fallbackServices } from "../config/services.config";
+ import { pagesConfig } from "../config/pages.config";
+ import { useContent } from "../lib/useContent";
+@@ -9,9 +10,26 @@ import Reveal from "../components/ui/Reveal";
+ export default function Servizi() {
+   const page = pagesConfig.servizi;
+   const { data: services } = useContent(servicesQuery, fallbackServices);
+-  const [active, setActive] = useState(0);
++  const { hash } = useLocation();
++  const slugOf = (s) => s.slug?.current || s.slug;
++  const [active, setActive] = useState(0); // indice del servizio aperto, -1 = tutti chiusi
+   const current = services[active] || services[0];
+ 
++  // Arrivo da home (/servizi#slug): apre il servizio scelto e scorre fino a lì.
++  useEffect(() => {
++    if (!hash) return;
++    const i = services.findIndex((s) => slugOf(s) === hash.slice(1));
++    if (i < 0) return;
++    setActive(i);
++    const id = requestAnimationFrame(() => {
++      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
++      document
++        .getElementById(hash.slice(1))
++        ?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
++    });
++    return () => cancelAnimationFrame(id);
++  }, [hash, services]);
++
+   return (
+     <section className="container pt-14 pb-24 md:pt-20 md:pb-40">
+       <Reveal>
+@@ -30,34 +48,68 @@ export default function Servizi() {
+       <div className="mt-16 md:mt-28 grid grid-cols-12 gap-x-6">
+         {/* Elenco: numeri in Garamond, titolo, descrizione e cosa comprende */}
+         <ul className="col-span-12 md:col-span-7 border-b border-primary/20">
+-          {services.map((s, i) => (
+-            <li
+-              key={s.slug?.current || s.slug || s.title}
+-              className="border-t border-primary/20"
+-              onMouseEnter={() => setActive(i)}
+-            >
+-              <Reveal delay={i * 60}>
+-                <div className="grid grid-cols-[3.75rem_1fr] md:grid-cols-[6rem_1fr] gap-x-4 py-8 md:py-11">
+-                  <span
+-                    className={`font-display text-[clamp(2rem,4vw,3.75rem)] leading-none transition-all duration-500 ease-editorial ${
+-                      i === active ? "italic" : ""
+-                    }`}
++          {services.map((s, i) => {
++            const open = i === active;
++            const slug = slugOf(s);
++            return (
++              <li
++                key={slug || s.title}
++                id={slug}
++                className="border-t border-primary/20 scroll-mt-28"
++              >
++                <Reveal delay={i * 60}>
++                  <button
++                    type="button"
++                    aria-expanded={open}
++                    aria-controls={`panel-${slug}`}
++                    onClick={() => setActive(open ? -1 : i)}
++                    className="group grid w-full grid-cols-[3.75rem_1fr_auto] md:grid-cols-[6rem_1fr_auto] items-center gap-x-4 py-8 md:py-11 text-left"
+                   >
+-                    {s.number}
+-                  </span>
+-                  <div>
++                    <span
++                      className={`font-display text-[clamp(2rem,4vw,3.75rem)] leading-none transition-all duration-500 ease-editorial ${
++                        open ? "italic" : ""
++                      }`}
++                    >
++                      {s.number}
++                    </span>
+                     <h2 className="font-display text-[clamp(1.75rem,3vw,3rem)] leading-[1.05] tracking-[-0.01em]">
+                       {s.title}
+                     </h2>
+-                    <p className="mt-3 max-w-md text-sm leading-relaxed">{s.short}</p>
+-                    {s.includes?.length > 0 && (
+-                      <p className="label mt-4 max-w-md opacity-70">{s.includes.join(" / ")}</p>
+-                    )}
++                    <span
++                      aria-hidden="true"
++                      className="grid h-11 w-11 place-items-center rounded-full border border-primary transition-colors duration-300 group-hover:bg-accent md:h-14 md:w-14"
++                    >
++                      <span className={`transition-transform duration-500 ease-editorial ${open ? "rotate-45" : ""}`}>+</span>
++                    </span>
++                  </button>
++
++                  {/* Pannello: transizione di altezza con grid-rows, senza JS di misura */}
++                  <div
++                    id={`panel-${slug}`}
++                    role="region"
++                    aria-label={s.title}
++                    className={`grid transition-[grid-template-rows] duration-500 ease-editorial motion-reduce:transition-none ${
++                      open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
++                    }`}
++                  >
++                    <div className="overflow-hidden">
++                      <div className="grid grid-cols-[3.75rem_1fr] md:grid-cols-[6rem_1fr] gap-x-4 pb-8 md:pb-11">
++                        <div className="col-start-2">
++                          <p className="max-w-md text-sm leading-relaxed">{s.short}</p>
++                          {s.description && (
++                            <p className="mt-3 max-w-md text-sm leading-relaxed">{s.description}</p>
++                          )}
++                          {s.includes?.length > 0 && (
++                            <p className="label mt-4 max-w-md opacity-70">{s.includes.join(" / ")}</p>
++                          )}
++                        </div>
++                      </div>
++                    </div>
+                   </div>
+-                </div>
+-              </Reveal>
+-            </li>
+-          ))}
++                </Reveal>
++              </li>
++            );
++          })}
+         </ul>
+ 
+         {/* Immagine alta che segue la riga attiva (solo da tablet in su) */}

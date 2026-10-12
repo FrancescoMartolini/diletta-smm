@@ -10,7 +10,7 @@ export default function ServicesPreview() {
   const { data: services, loading } = useContent(servicesQuery, fallbackServices);
 
   return (
-    <section className="bg-muted py-24 md:py-40">
+    <section id={copy.id} className="scroll-mt-20 bg-muted py-24 md:py-40">
       <div className="container">
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between mb-14 md:mb-24">
           <Reveal>
@@ -33,7 +33,7 @@ export default function ServicesPreview() {
             services.map((s, i) => (
               <li key={s.slug?.current || s.slug || s.title} className="border-t border-primary/20">
                 <Reveal delay={i * 60}>
-                  <Link to="/servizi" className="group flex items-center gap-6 py-6 md:py-9">
+                  <Link to={`/servizi#${s.slug?.current || s.slug}`} className="group flex items-center gap-6 py-6 md:py-9">
                     <span className="flex-1 min-w-0">
                       <span className="block font-display text-[clamp(2rem,6.2vw,6.5rem)] leading-[1] tracking-[-0.02em] transition-all duration-500 ease-editorial group-hover:italic group-hover:translate-x-[1.2vw]">
                         {s.title}

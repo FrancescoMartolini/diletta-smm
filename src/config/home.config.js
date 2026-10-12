@@ -17,7 +17,11 @@ export const homeConfig = {
       { id: "b", imageId: null, alt: "[DA COMPILARE] Lavoro 2", caption: "[CLIENTE]" },
       { id: "c", imageId: null, alt: "[DA COMPILARE] Lavoro 3", caption: "[CLIENTE · PROGETTO]" },
     ],
-    badge: { line1: "Scopri", line2: "i lavori", href: "#selected-work" },
+    // Bollini CTA: il rosa porta ai lavori, il beige ai servizi (sezione "Cosa faccio" della home)
+    badges: [
+      { id: "work", line1: "Scopri", line2: "i lavori", href: "#selected-work", tone: "accent" },
+      { id: "services", line1: "Scopri", line2: "i servizi", href: "#servizi", tone: "muted" },
+    ],
   },
 
   intro: {
@@ -47,6 +51,7 @@ export const homeConfig = {
   },
 
   services: {
+    id: "servizi",
     kicker: "Cosa faccio",
     headline: "Cosa posso fare\nper il tuo brand.",
     cta: { label: "Tutti i servizi", path: "/servizi" },
