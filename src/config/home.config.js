@@ -5,12 +5,19 @@
 
 export const homeConfig = {
   hero: {
-    eyebrow: "Social Media Manager",
-    // una stringa per riga (animate a maschera). PROVVISORIO: da validare con la cliente
-    headlineLines: ["Faccio parlare", "i brand che", "hanno qualcosa", "da dire."],
-    ctaSecondary: { label: "Guarda i lavori", href: "#selected-work" },
-    imageId: null, // public ID Cloudinary del ritratto
-    imageAlt: "[DA COMPILARE] Ritratto della professionista",
+    // Il motto ufficiale è la parola protagonista. font: "sans" (Neue Montreal) | "serif" (Garamond)
+    headline: [
+      { text: "NOT JUST", font: "sans" },
+      { text: "AN IDEA", font: "serif" },
+    ],
+    // Fotografie del collage: public ID Cloudinary dei lavori REALI. Finché sono null
+    // compaiono placeholder identificabili. Didascalie: nome cliente + progetto reali.
+    photos: [
+      { id: "a", imageId: null, alt: "[DA COMPILARE] Lavoro 1", caption: "[CLIENTE · PROGETTO]" },
+      { id: "b", imageId: null, alt: "[DA COMPILARE] Lavoro 2", caption: "[CLIENTE]" },
+      { id: "c", imageId: null, alt: "[DA COMPILARE] Lavoro 3", caption: "[CLIENTE · PROGETTO]" },
+    ],
+    badge: { line1: "Scopri", line2: "i lavori", href: "#selected-work" },
   },
 
   intro: {
@@ -48,7 +55,7 @@ export const homeConfig = {
   work: {
     id: "selected-work",
     kicker: "Selected work",
-    headline: "Lavori\nselezionati.",
+    headline: "Lavori\nselezionati",
     // Layout visibile finché portfolio.config.js / Sanity sono vuoti
     placeholders: [
       { orientation: "vertical" },

@@ -1,58 +1,83 @@
-import Button from "../ui/Button";
+import { Link } from "react-router-dom";
 import Img from "../ui/Img";
-import Reveal from "../ui/Reveal";
 import { siteConfig } from "../../config/site.config";
 import { homeConfig } from "../../config/home.config";
+import { services as fallbackServices } from "../../config/services.config";
+import { useContent } from "../../lib/useContent";
+import { servicesQuery } from "../../lib/queries";
+import { STAR_POINTS } from "../../lib/star";
+import "./hero.css";
+
+// Aspect e colore del placeholder per ciascuna foto (i colori restano nella palette)
+const PHOTO_STYLE = {
+  a: { aspect: [4, 5], sizes: "(min-width: 1024px) 22vw, 42vw", ph: "!bg-accent" },
+  b: { aspect: [4, 5], sizes: "(min-width: 1024px) 11vw, 22vw", ph: "!bg-secondary !text-inverse" },
+  c: { aspect: [4, 5], sizes: "(min-width: 1024px) 18vw, 36vw", ph: "!bg-muted" },
+};
 
 export default function Hero() {
   const { hero } = homeConfig;
+  const { data: services } = useContent(servicesQuery, fallbackServices);
 
   return (
-    <section className="pt-10 md:pt-16 lg:pt-20 pb-20 md:pb-28">
-      <div className="container">
-        <div className="grid grid-cols-12 gap-x-6 gap-y-10 lg:items-end">
-          {/* Testo: parte da sinistra, non centrato */}
-          <div className="col-span-12 lg:col-span-8 lg:pb-6">
-            <p className="text-sm text-accent mb-6 md:mb-8">{hero.eyebrow}</p>
+    <section className="hero">
+      <div className="hero__stage">
+        {/* Il motto è l'h1: aria-label con descrizione completa, le righe sono solo visive */}
+        <h1
+          className="hero__title"
+          aria-label={`${siteConfig.name}, ${siteConfig.tagline}: ${hero.headline.map((l) => l.text).join(" ")}`}
+        >
+          {hero.headline.map((line, i) => (
+            <span key={line.text} className={`hero__line hero__line--${line.font}`} aria-hidden="true">
+              <span style={{ "--d": `${150 + i * 140}ms` }}>{line.text}</span>
+            </span>
+          ))}
+        </h1>
 
-            <h1 className="font-display text-display-hero md:[font-size:clamp(3.5rem,9vw,5rem)] lg:[font-size:clamp(3rem,7.2vw,6.5rem)]" aria-label={hero.headlineLines.join(" ")}>
-              {hero.headlineLines.map((line, i) => (
-                <span key={line} className="line-mask" aria-hidden="true">
-                  <span style={{ "--d": `${120 + i * 110}ms` }}>{line}</span>
-                </span>
-              ))}
-            </h1>
+        {hero.photos.map((p, i) => {
+          const st = PHOTO_STYLE[p.id];
+          return (
+            <figure key={p.id} className={`hero__photo hero__photo--${p.id}`} style={{ "--d": `${650 + i * 160}ms` }}>
+              <Img
+                publicId={p.imageId}
+                alt={p.alt}
+                aspect={st.aspect}
+                sizes={st.sizes}
+                priority={p.id === "a"}
+                className={st.ph}
+              />
+              <figcaption>{p.caption}</figcaption>
+            </figure>
+          );
+        })}
 
-            <Reveal delay={500} className="mt-8 md:mt-10 max-w-md">
-              <p className="text-base md:text-lg text-secondary">{siteConfig.description}</p>
-            </Reveal>
+        {/* Badge rosa = CTA principale verso i lavori */}
+        <a href={hero.badge.href} className="hero__badge">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <polygon points={STAR_POINTS} fill="rgb(var(--color-accent))" />
+          </svg>
+          <span>
+            {hero.badge.line1}
+            <br />
+            {hero.badge.line2} ↓
+          </span>
+        </a>
+      </div>
 
-            <Reveal delay={650} className="mt-8 md:mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-              <Button to={siteConfig.ctaPrimary.path}>{siteConfig.ctaPrimary.label} →</Button>
-              <a href={hero.ctaSecondary.href} className="link-underline text-sm">
-                {hero.ctaSecondary.label}
-              </a>
-            </Reveal>
-          </div>
-
-          {/* Immagine: su tablet sfalsata a destra, su desktop colonna stretta abbassata */}
-          <Reveal
-            delay={300}
-            className="col-span-10 col-start-3 md:col-span-7 md:col-start-6 lg:col-span-4 lg:col-start-9 lg:mt-24"
-          >
-            <Img
-              publicId={hero.imageId}
-              alt={hero.imageAlt}
-              aspect={[4, 5]}
-              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 55vw, 80vw"
-              priority
-            />
-            <p className="mt-3 flex justify-between text-xs text-secondary">
-              <span>{siteConfig.tagline}</span>
-              <span>{siteConfig.location}</span>
-            </p>
-          </Reveal>
-        </div>
+      <div className="hero__foot">
+        <nav aria-label="Servizi" className="hero__services">
+          <p>({services.length} servizi)</p>
+          <ul>
+            {services.map((s) => (
+              <li key={s.slug?.current || s.slug || s.title}>
+                <Link to="/servizi">{s.title}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <p className="hero__about">
+          {siteConfig.tagline}. {siteConfig.description}
+        </p>
       </div>
     </section>
   );

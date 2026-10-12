@@ -1,0 +1,32 @@
+/* Titolo di sezione oversize (stesso linguaggio della hero): riga sans + riga serif,
+   la seconda allineata a destra, entrambe che sbordano leggermente. Unità --u = 1vw con tetto. */
+.big-title {
+  --u: min(1vw, 19.2px);
+  position: relative;
+  z-index: 0;
+  max-width: calc(var(--u) * 100);
+  margin: 0 auto;
+  font-weight: 400;
+  line-height: 0.8;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.big-title > span { display: block; padding: 0.09em 0 0.05em; }
+.big-title__a {
+  font-family: var(--font-body);
+  font-size: calc(var(--u) * 17);
+  letter-spacing: -0.05em;
+  margin-left: calc(var(--u) * -0.8);
+}
+.big-title__b {
+  font-family: var(--font-display);
+  font-size: calc(var(--u) * 11.8);
+  letter-spacing: -0.02em;
+  text-align: right;
+  margin-right: calc(var(--u) * 1);
+  margin-top: calc(var(--u) * 1.2);
+}
+@media (max-width: 639px) {
+  .big-title__a { font-size: calc(var(--u) * 26); }
+  .big-title__b { font-size: calc(var(--u) * 11.8); }
+}

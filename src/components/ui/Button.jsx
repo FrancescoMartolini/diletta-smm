@@ -8,9 +8,9 @@ export default function Button({ to, href, children, variant = "primary", onClic
   const base =
     "inline-flex items-center gap-2 px-6 py-3 text-sm tracking-wide transition-colors duration-300 ease-editorial";
   const variants = {
-    primary: "bg-primary text-bg hover:bg-accent",
-    ghost: "border border-primary text-primary hover:border-accent hover:text-accent",
-    accent: "bg-accent text-inverse hover:bg-inverse hover:text-primary",
+    primary: "bg-primary text-bg hover:bg-accent hover:text-primary",
+    ghost: "border border-primary text-primary hover:bg-accent",
+    accent: "bg-accent text-primary hover:bg-inverse",
   };
   const styles = `${base} ${variants[variant] || variants.primary}`;
 

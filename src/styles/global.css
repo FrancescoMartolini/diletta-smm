@@ -3,21 +3,23 @@
 @tailwind utilities;
 
 :root {
-  /* ---- COLORE — canali "R G B" (permettono bg-bg/90 ecc. in Tailwind) ----
-     Palette PROVVISORIA scelta in assenza di colori dalla cliente:
-     carta calda + inchiostro + un solo accento rosso, usato con parsimonia.
-     Per cambiarla basta modificare questi valori. */
-  --color-bg: 242 239 232;        /* #F2EFE8 carta */
-  --color-text: 23 21 15;         /* #17150F inchiostro caldo */
-  --color-primary: 23 21 15;      /* #17150F sfondi scuri / bottoni */
-  --color-secondary: 107 102 91;  /* #6B665B testo secondario (contrasto AA su bg) */
-  --color-accent: 195 20 50;      /* #C31432 rosso scarlatto: CTA, hover, dettagli */
-  --color-muted: 221 216 204;     /* #DDD8CC linee e superfici */
-  --color-inverse: 250 248 244;   /* #FAF8F4 testo su sfondo scuro */
+  /* ---- COLORE — palette ufficiale Brand Guidelines 21 (canali "R G B") ----
+     Nero #0E0E0E · Bianco #FFFFFF · Rosa cipria #FFC2CC · Beige sabbia #ECDFC6 · Antracite #28272B
+     Il rosa è un accento (superfici, badge, hover): mai testo su sfondo chiaro (contrasto insufficiente). */
+  --color-bg: 255 255 255;        /* #FFFFFF bianco */
+  --color-text: 14 14 14;         /* #0E0E0E nero */
+  --color-primary: 14 14 14;      /* #0E0E0E sfondi scuri / bottoni */
+  --color-secondary: 40 39 43;    /* #28272B antracite: testi secondari (usare con /70 per gerarchia) */
+  --color-accent: 255 194 204;    /* #FFC2CC rosa cipria: accento */
+  --color-muted: 236 223 198;     /* #ECDFC6 beige sabbia: superfici e linee */
+  --color-inverse: 255 255 255;   /* #FFFFFF testo su sfondo scuro */
 
-  /* ---- TIPOGRAFIA (font self-hosted via @fontsource, vedi main.jsx) ---- */
-  --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
-  --font-body: "Work Sans Variable", "Helvetica Neue", Arial, sans-serif;
+  /* ---- TIPOGRAFIA ----
+     Font ufficiali (Brand Guidelines): Neue Montreal (titoli/UI) e Garamond (editoriale).
+     PROVVISORIO: finché non ci sono i file web (woff2, licenza) si usano Inter ed EB Garamond
+     come stand-in. Per sostituirli basta cambiare queste due variabili e gli import in main.jsx. */
+  --font-display: "EB Garamond Variable", Garamond, "Times New Roman", serif;
+  --font-body: "Inter Variable", "Helvetica Neue", Arial, sans-serif;
 
   /* ---- ALTRO ---- */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -42,7 +44,7 @@ h1, h2, h3, .font-display {
 
 a:focus-visible,
 button:focus-visible {
-  outline: 2px solid rgb(var(--color-accent));
+  outline: 2px solid rgb(var(--color-primary));
   outline-offset: 3px;
 }
 
@@ -86,7 +88,6 @@ button:focus-visible {
   transition: background-size 400ms var(--ease), color 300ms;
 }
 .link-underline:hover {
-  color: rgb(var(--color-accent));
   background-size: 0% 1px;
   background-position: 100% 100%;
 }
@@ -102,4 +103,12 @@ button:focus-visible {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Micro-etichetta editoriale: "(Chi sono)", "(5 servizi)" — stesso pattern della hero */
+.label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.3;
 }
